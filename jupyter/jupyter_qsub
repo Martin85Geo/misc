@@ -8,40 +8,15 @@ hash jupyter 2>/dev/null || {
     exit 1
 }
 
-service="lab"
-if [[ "$1" == "notebook" ]]; then
-    service="notebook"
-    shift
-elif [[ "$1" == "lab" ]]; then
-    shift
-fi
-echo "Launching a Jupyter $service session"
-
-set -u
-
-echo "None $@"
-echo "1 ${@:1}"
-echo "2 ${@:2}"
-
-job_name=session_jupyter_${service}
-echo "qsub \
-    -V \
-    -l h_rt=24:00:00 \
-    -l eth_speed=10 \
-    -j y \
-    -b y \
-    -N $job_name \
-    jupyter "$service" "${@:1}" 2>&1
-"
-exit
+job_name=session_jupyter_nb
 qsub_msg=$(qsub \
     -V \
     -l h_rt=24:00:00 \
-    -l eth_speed=10 \
     -j y \
     -b y \
     -N $job_name \
-    jupyter "$service" "$@" 2>&1)
+    -pe omp 2 \
+    jupyter notebook 2>&1)
 qsub_jid=$(echo $qsub_msg | awk '{ print $3 }')
 echo "$qsub_msg"
 
@@ -61,6 +36,7 @@ while true; do
                            awk -F '@' '{ print $2 }')
             echo "Running on ${jupyter_host}:${jip}"
             echo "Try..."
+            # Hostname needs to be the long version when doing this from home
             echo "ssh -L localhost:${jip}:${jupyter_host}:${jip} ${USER}@${HOSTNAME}"
             break
         fi

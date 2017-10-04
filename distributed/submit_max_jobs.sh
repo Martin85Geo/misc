@@ -35,7 +35,7 @@ main() {
         echo "Submitting: $group/$MAX: $i/$nsplit - $f"
     
         SUBMITTED[$group]=$(qsub -terse \
-            -V -j y -l h_rt=24:00:00 -N ${TITLE}_${group}-${i} \
+            -V -j y -l h_rt=48:00:00 -N ${TITLE}_${group}-${i} \
             $HOLD \
             $SCRIPT $f)
         let i+=1

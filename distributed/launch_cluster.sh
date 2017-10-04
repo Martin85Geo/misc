@@ -13,7 +13,7 @@ JOBNAME="dask-exec"
 echo "Launching scheduler job..."
 qsub_msg=$(
     qsub \
-    -V -j y -b y -l h_rt=24:00:00 -l eth_speed=10 \
+    -V -j y -b y -l h_rt=24:00:00 \
     -N $JOBNAME \
     dask-scheduler 2>&1
 )
@@ -47,7 +47,6 @@ qsub \
     -b y \
     -pe omp $NPROC \
     -l h_rt=24:00:00 \
-    -l eth_speed=10 \
     -N "dask-worker" \
     -t 1-$N \
     dask-worker \
