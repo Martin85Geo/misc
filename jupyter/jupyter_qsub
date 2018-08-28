@@ -11,18 +11,19 @@ hash jupyter 2>/dev/null || {
 job_name=session_jupyter_nb
 qsub_msg=$(qsub \
     -V \
-    -l h_rt=24:00:00 \
+    -l h_rt=12:00:00 \
     -j y \
     -b y \
     -N $job_name \
-    -pe omp 2 \
+    -l mem_per_core=4G \
+    -pe omp 4 \
     jupyter notebook 2>&1)
 qsub_jid=$(echo $qsub_msg | awk '{ print $3 }')
 echo "$qsub_msg"
 
 
 # Check in on the job, finding the server to SSH into
-log_file=${job_name}.o${qsub_jid}
+log_file=$(pwd)/${job_name}.o${qsub_jid}
 echo "Finding the server the notebook is running on..."
 echo "Searching for log file: ${log_file}"
 while true; do
